@@ -1,6 +1,12 @@
 import { refs } from "../main";
 
-// Template for a single image
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
+
+
+let lightbox = null;
+
+
 export function imageTemplate({
   largeImageURL,
   webformatURL,
@@ -8,44 +14,56 @@ export function imageTemplate({
   likes,
   views,
   comments,
-  downloads
+  downloads,
 }) {
   return `
 <li class="gallery-item">
   <a class="gallery-link" href="${largeImageURL}">
-    <img
-      class="gallery-image"
-      src="${webformatURL}"
-      alt="${tags}"
-      loading="lazy"
-    />
+    <img class="gallery-image" src="${webformatURL}" alt="${tags}" />
   </a>
-
   <div class="info">
-    <p class="info-item"><b>Likes</b> ${likes}</p>
-    <p class="info-item"><b>Views</b> ${views}</p>
-    <p class="info-item"><b>Comments</b> ${comments}</p>
-    <p class="info-item"><b>Downloads</b> ${downloads}</p>
+    <p><b>Likes:</b> ${likes}</p>
+    <p><b>Views:</b> ${views}</p>
+    <p><b>Comments:</b> ${comments}</p>
+    <p><b>Downloads:</b> ${downloads}</p>
   </div>
 </li>`;
 }
 
-// Creates full HTML for array of images
+
 export function createImages(arr) {
   return arr.map(imageTemplate).join('');
 }
 
-// Clears gallery before new search
+
 export function clearGallery() {
   refs.gallery.innerHTML = '';
 }
 
-// Shows loader
+export function renderGallery(images, { append = false } = {}) {
+  const markup = createImages(images);
+
+  if (append) {
+    refs.gallery.insertAdjacentHTML('beforeend', markup);
+  } else {
+    refs.gallery.innerHTML = markup;
+  }
+
+
+  if (!lightbox) {
+    lightbox = new SimpleLightbox('.gallery a', {
+      captionsData: 'alt',
+      captionDelay: 250,
+    });
+  }
+
+  lightbox.refresh();
+}
+
 export function showLoader() {
   refs.loader.classList.remove('hidden');
 }
 
-// Hides loader
 export function hideLoader() {
   refs.loader.classList.add('hidden');
 }
